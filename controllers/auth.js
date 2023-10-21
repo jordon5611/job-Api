@@ -7,27 +7,27 @@ const register = async (req, res) => {
 
     const userCreated = await User.create(data)
     const token = userCreated.createToken()
-    res.status(200).json({ Created: userCreated.name, token })
+    res.status(200).json({ token:token })
 }
 
 const login = async (req, res) => {
     const { email, password } = req.body
-
+    console.log(req.body)
     if(!email || !password){
-        return res.status(StatusCodes.BAD_REQUEST).json('please fill all fields')
+        return res.status(StatusCodes.BAD_REQUEST).json({err : 'please fill all fields'})
     }
 
     const user = await User.findOne({ email: email })
 
     if (!user) {
-        return res.status(StatusCodes.UNAUTHORIZED).json('No Account Created with this email')
+        return res.status(StatusCodes.UNAUTHORIZED).json({err :'No Account Created with this email'})
     }
     const isPasswordCorrect = await user.comparePassword(password)
     if(!isPasswordCorrect){
-        return res.status(StatusCodes.UNAUTHORIZED).json('Incorrect Password')
+        return res.status(StatusCodes.UNAUTHORIZED).json({err :'Incorrect Password'})
     }
     const token = user.createToken()
-    res.status(200).json({ Loggedin: user.name, token : token })
+    res.status(200).json({token : token })
 }
 
 module.exports = { login, register }
